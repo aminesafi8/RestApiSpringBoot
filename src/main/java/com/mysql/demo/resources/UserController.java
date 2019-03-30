@@ -1,4 +1,4 @@
-package com.mysql.demo.controllers;
+package com.mysql.demo.resources;
 
 import java.math.BigInteger;
 import java.net.URI;
@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,12 +21,24 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.mysql.demo.entities.Role;
 import com.mysql.demo.entities.User;
 import com.mysql.demo.repository.UserRepository;
+import com.mysql.demo.utils.ApiKeyGenerator;
 
 @RestController
+@CrossOrigin("http://localhost:4200")
 public class UserController {
 
 	@Autowired
 	UserRepository userRepository;
+
+	@GetMapping("/api/user/{username}/{password}")
+	public ResponseEntity userExist(@PathVariable String username, @PathVariable String password) {
+
+		for (User item : userRepository.findAll()) {
+			if (item.getUsername().equals(username) && item.getPassword().equals(password))
+				return new ResponseEntity(HttpStatus.OK);
+		}
+		return new ResponseEntity(HttpStatus.NOT_FOUND);
+	}
 
 	@GetMapping("/api/user")
 	public List<User> index() {
@@ -41,7 +54,7 @@ public class UserController {
 	public ResponseEntity<Void> createUser(@RequestBody User user) {
 		user.setDateInscription(new Date());
 		user.setRole(Role.Developper);
-		user.setApiKey(generateRandomHexToken(15));
+		user.setApiKey(ApiKeyGenerator.generateRandomHexToken(15));
 		userRepository.save(user);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
 		return ResponseEntity.created(uri).build();
@@ -57,19 +70,6 @@ public class UserController {
 
 		User updatedUser = userRepository.save(user);
 		return new ResponseEntity<User>(user, HttpStatus.OK);
-	}
-
-	/**
-	 * This meethod is dedicated to generate random API KEY
-	 * 
-	 * @param byteLength
-	 * @return
-	 */
-	public static String generateRandomHexToken(int byteLength) {
-		SecureRandom secureRandom = new SecureRandom();
-		byte[] token = new byte[byteLength];
-		secureRandom.nextBytes(token);
-		return new BigInteger(1, token).toString(16); // hex encoding
 	}
 
 }

@@ -19,6 +19,7 @@ public class User {
 	private int id;
 	private String nom;
 	private String prenom;
+	private String username;
 	private String email;
 	private String password;
 	@JsonFormat(pattern="dd/MM/yyyy")
@@ -112,6 +113,14 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 	

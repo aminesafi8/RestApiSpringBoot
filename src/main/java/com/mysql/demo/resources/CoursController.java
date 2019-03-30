@@ -1,4 +1,4 @@
-package com.mysql.demo.controllers;
+package com.mysql.demo.resources;
 
 import java.net.URI;
 import java.util.ArrayList;

@@ -15,6 +15,8 @@ public class Cours {
 	private String titre;
 
 	private String description;
+	
+	
 
 	public Cours() {
 		// TODO Auto-generated constructor stub
